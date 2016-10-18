@@ -4,7 +4,7 @@ public class Widget {
     public Widget() {
     }
 
-    public void setProp(String prop) throw Exception {
+    public void setProp(String prop) throws Exception {
         this.prop = prop;
     }
 }
