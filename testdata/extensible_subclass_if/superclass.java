@@ -1,0 +1,1 @@
+public interface BaseWidgetBuilder extends com.mistraltech.bog.core.TwoPhaseBuilder {}

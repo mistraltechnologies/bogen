@@ -1,0 +1,1 @@
+public class BaseWidgetBuilder extends com.mistraltech.bog.core.AbstractBuilder {}

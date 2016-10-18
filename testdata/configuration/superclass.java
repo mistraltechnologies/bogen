@@ -1,0 +1,1 @@
+public class BaseWidgetBuilder<R extends BaseWidgetBuilder<R, T>, T extends Widget> extends com.mistraltech.bog.core.AbstractBuilder<T> {}

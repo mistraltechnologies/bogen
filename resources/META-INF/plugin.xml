@@ -1,0 +1,52 @@
+<idea-plugin version="2">
+  <id>com.mistraltech.bogen</id>
+  <name>BOG Builder Generator</name>
+  <version>0.1</version>
+  <vendor email="support@mistraltech.co.uk">Mistral Technologies</vendor>
+
+  <description><![CDATA[
+      <p>Generates a companion builder class for a selected Java class based on the BOG builder support library.
+      <p>BOG builders are intended for use in unit testing and support non-trivial defaults for builder
+      properties, helping to ensure the tests are neither over-specified nor under-specified.
+      <p>For more details, see the project page at <a href="https://github.com/mistraltechnologies/bog">GitHub</a>.
+    ]]></description>
+
+  <change-notes><![CDATA[
+<p><b>0.1</b>
+<p>First release.
+    ]]>
+  </change-notes>
+
+  <idea-version since-build="141.0"/>
+
+  <depends>com.intellij.modules.lang</depends>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <projectConfigurable instance="com.mistraltech.bogen.plugin.BogenConfigurable" />
+  </extensions>
+
+  <application-components>
+    <!-- Add your application components here -->
+  </application-components>
+
+  <project-components>
+    <!-- Add your project components here -->
+  </project-components>
+
+  <module-components>
+    <component>
+      <interface-class>com.mistraltech.bogen.plugin.GenerateBuilderPlugin</interface-class>
+      <implementation-class>com.mistraltech.bogen.plugin.GenerateBuilderPlugin</implementation-class>
+    </component>
+  </module-components>
+
+  <actions>
+    <!-- Add your actions here -->
+    <action id="Bogen.GenerateBuilder" class="com.mistraltech.bogen.plugin.GenerateBuilderAction" text="Generate Builder"
+            description="Generate a BOG builder class">
+      <add-to-group group-id="CodeMenu" anchor="last"/>
+      <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl G" second-keystroke="shift ctrl B"/>
+    </action>
+  </actions>
+
+</idea-plugin>
