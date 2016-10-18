@@ -4,6 +4,7 @@ import com.mistraltech.bogen.codegenerator.javabuilder.AbstractClassBuilder;
 import com.mistraltech.bogen.codegenerator.javabuilder.BlockStatementBuilder;
 import com.mistraltech.bogen.codegenerator.javabuilder.ClassBuilder;
 import com.mistraltech.bogen.codegenerator.javabuilder.ExpressionBuilder;
+import com.mistraltech.bogen.codegenerator.javabuilder.ExpressionTermBuilder;
 import com.mistraltech.bogen.codegenerator.javabuilder.JavaDocumentBuilder;
 import com.mistraltech.bogen.codegenerator.javabuilder.MethodBuilder;
 import com.mistraltech.bogen.codegenerator.javabuilder.MethodCallBuilder;
@@ -47,6 +48,7 @@ import static java.util.stream.Collectors.toList;
 
 public class BuilderClassCodeWriter extends AbstractBuilderCodeWriter {
     private static final String CONCRETE_BUILDER_PROPERTY_TYPE_NAME = "com.mistraltech.bog.core.ValueContainer";
+    private static final String EXPOSED_BUILDER_PROPERTY_TYPE_NAME = "com.mistraltech.bog.core.BuilderProperty";
 
     public BuilderClassCodeWriter(BuilderGeneratorProperties builderGeneratorProperties) {
         super(builderGeneratorProperties);
@@ -99,7 +101,8 @@ public class BuilderClassCodeWriter extends AbstractBuilderCodeWriter {
 
             builderType = aType().withName(nestedClassName()).withTypeBindings(typeParameters());
 
-            clazz.withTypeParameter(returnTypeDecl)
+            clazz.withAbstractFlag(true)
+                    .withTypeParameter(returnTypeDecl)
                     .withTypeParameter(aTypeParameterDecl().withName("T")
                             .withExtends(builtType));
         } else {
@@ -167,13 +170,15 @@ public class BuilderClassCodeWriter extends AbstractBuilderCodeWriter {
 
         sourceClassProperties.forEach(p -> clazz.withMethods(generateBuilderSetters(p, returnType)));
 
+        sourceClassProperties.forEach(p -> clazz.withMethod(generateBuilderGetters(p)));
+
         if (generatorProperties.isExtensible()) {
-            clazz.withNestedClass(generateNestedClass(builderType, builtType, sourceClassProperties));
+            clazz.withNestedClass(generateNestedClass(builderType, builtType, constructorProperties));
         } else {
             clazz.withMethod(generateConstructMethod(builtType, constructorProperties));
         }
 
-        clazz.withMethod(generateAssignMethod(builtType, sourceClassProperties));
+        clazz.withMethod(generateAssignMethod(builtTypeParam, sourceClassProperties));
 
         clazz.withMethod(generatePostUpdateMethod(builtType, sourceClassProperties));
 
@@ -247,7 +252,7 @@ public class BuilderClassCodeWriter extends AbstractBuilderCodeWriter {
         return constructor;
     }
 
-    private NestedClassBuilder generateNestedClass(TypeBuilder builderType, TypeBuilder builtType, Set<Property> properties) {
+    private NestedClassBuilder generateNestedClass(TypeBuilder builderType, TypeBuilder builtType, List<Property> constructorProperties) {
         final MethodCallBuilder superCall = aMethodCall()
                 .withName("super");
 
@@ -256,7 +261,7 @@ public class BuilderClassCodeWriter extends AbstractBuilderCodeWriter {
         }
 
         final MethodBuilder constructor = aMethod()
-                .withAccessModifier("protected")
+                .withAccessModifier("private")
                 .withName(nestedClassName())
                 .withStatement(anExpressionStatement().withExpression(superCall));
 
@@ -266,6 +271,8 @@ public class BuilderClassCodeWriter extends AbstractBuilderCodeWriter {
                     .withType(builtType)
                     .withName("template"));
         }
+
+        final MethodBuilder constructMethod = generateConstructMethod(builtType, constructorProperties);
 
         NestedClassBuilder nestedClass = aNestedClass()
                 .withAccessModifier("public")
@@ -277,7 +284,8 @@ public class BuilderClassCodeWriter extends AbstractBuilderCodeWriter {
                         .withTypeBindings(typeParameters())
                         .withTypeBinding(builderType)
                         .withTypeBinding(builtType))
-                .withMethod(constructor);
+                .withMethod(constructor)
+                .withMethod(constructMethod);
 
         return nestedClass;
     }
@@ -380,6 +388,19 @@ public class BuilderClassCodeWriter extends AbstractBuilderCodeWriter {
         return methods;
     }
 
+    private MethodBuilder generateBuilderGetters(@NotNull Property property) {
+        TypeBuilder returnType = aType()
+                .withName(EXPOSED_BUILDER_PROPERTY_TYPE_NAME)
+                .withTypeBinding(getPropertyTypeBuilder(property, true));
+
+        return aMethod()
+                .withAccessModifier("public")
+                .withReturnType(returnType)
+                .withName(getterMethodName(property))
+                .withStatement(aReturnStatement()
+                        .withExpression(expressionText(builderAttributeName(property))));
+    }
+
     private MethodBuilder generateAssignMethod(TypeBuilder builtType, Set<Property> properties) {
         final MethodBuilder assignMethod = aMethod()
                 .withAnnotation(anAnnotation()
@@ -408,9 +429,7 @@ public class BuilderClassCodeWriter extends AbstractBuilderCodeWriter {
                                                 .withObject("instance")
                                                 .withName(p.getMutatorName().get())
                                                 .withParameter(anExpression()
-                                                        .withTerm(aMethodCall()
-                                                                .withObject(builderAttributeName(p))
-                                                                .withName("value"))))));
+                                                        .withTerm(getValueMethodCall(p, false))))));
 
         return assignMethod;
     }
@@ -441,14 +460,22 @@ public class BuilderClassCodeWriter extends AbstractBuilderCodeWriter {
         //noinspection OptionalGetWithoutIsPresent
         properties.forEach(p ->
                 constructorCall
-                        .withParameter(aMethodCall()
-                                .withObject(builderAttributeName(p))
-                                .withName("value")));
+                        .withParameter(getValueMethodCall(p, generatorProperties.isExtensible())));
 
         constructMethod.withStatement(aReturnStatement()
                 .withExpression(constructorCall));
 
         return constructMethod;
+    }
+
+    private MethodCallBuilder getValueMethodCall(Property property, boolean useGetter) {
+        ExpressionTermBuilder target = useGetter ?
+                aMethodCall().withName(getterMethodName(property)) :
+                expressionText(builderAttributeName(property));
+
+        return aMethodCall()
+                .withObject(target)
+                .withName("value");
     }
 
     private MethodBuilder generatePostUpdateMethod(TypeBuilder builtType, Set<Property> properties) {

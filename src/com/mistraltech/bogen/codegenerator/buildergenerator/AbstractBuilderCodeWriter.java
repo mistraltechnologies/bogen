@@ -134,6 +134,10 @@ public abstract class AbstractBuilderCodeWriter implements CodeWriter {
         return generatorProperties.getSetterPrefix() + propertyName + generatorProperties.getSetterSuffix();
     }
 
+    protected String getterMethodName(@NotNull Property property) {
+        return "get" + property.getCapitalisedName();
+    }
+
     protected String getMatchedObjectDescription() {
         return generatorProperties.getFactoryMethodPrefix().isEmpty() ?
                 getSourceClassName() :
