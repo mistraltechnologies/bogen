@@ -202,7 +202,7 @@ public class BuilderGeneratorOptionsPanel {
     }
 
     public boolean isGenerateFactoryMethods() {
-        return classRadioButton.isSelected();
+        return true;
     }
 
     @Nullable
