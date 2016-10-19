@@ -1,10 +1,11 @@
 import com.mistraltech.bog.core.AbstractBuilder;
 import com.mistraltech.bog.core.Builder;
+import com.mistraltech.bog.core.BuilderProperty;
 import com.mistraltech.bog.core.ValueContainer;
 import com.mistraltech.bog.core.annotation.Builds;
 
 @Builds(Widget.class)
-public class WidgetBuilder<R extends WidgetBuilder<R, T>, T extends Widget> extends AbstractBuilder<T> {
+public abstract class WidgetBuilder<R extends WidgetBuilder<R, T>, T extends Widget> extends AbstractBuilder<T> {
     private final ValueContainer<String> propBuilder = new ValueContainer<>();
 
     protected WidgetBuilder() {
@@ -30,8 +31,12 @@ public class WidgetBuilder<R extends WidgetBuilder<R, T>, T extends Widget> exte
         return self();
     }
 
+    public BuilderProperty<String> getProp() {
+        return propBuilder;
+    }
+
     @Override
-    protected void assign(final Widget instance) {
+    protected void assign(final T instance) {
         super.assign(instance);
     }
 
@@ -42,8 +47,13 @@ public class WidgetBuilder<R extends WidgetBuilder<R, T>, T extends Widget> exte
     }
 
     public static class WidgetBuilderType extends WidgetBuilder<WidgetBuilderType, Widget> {
-        protected WidgetBuilderType() {
+        private WidgetBuilderType() {
             super();
+        }
+
+        @Override
+        protected Widget construct() {
+            return new Widget(getProp().value());
         }
     }
 }

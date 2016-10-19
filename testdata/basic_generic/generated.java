@@ -1,5 +1,6 @@
 import com.mistraltech.bog.core.AbstractBuilder;
 import com.mistraltech.bog.core.Builder;
+import com.mistraltech.bog.core.BuilderProperty;
 import com.mistraltech.bog.core.ValueContainer;
 import com.mistraltech.bog.core.annotation.Builds;
 
@@ -30,6 +31,10 @@ public final class WidgetBuilder<P1> extends AbstractBuilder<Widget<P1>> {
     public WidgetBuilder<P1> withContents(final Builder<? extends P1> contentsBuilder) {
         this.contentsBuilder.set(contentsBuilder);
         return this;
+    }
+
+    public BuilderProperty<P1> getContents() {
+        return contentsBuilder;
     }
 
     @Override

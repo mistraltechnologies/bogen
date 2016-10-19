@@ -1,4 +1,5 @@
 import com.mistraltech.bog.core.Builder;
+import com.mistraltech.bog.core.BuilderProperty;
 import com.mistraltech.bog.core.ValueContainer;
 import com.mistraltech.bog.core.annotation.Builds;
 
@@ -53,6 +54,18 @@ public final class WidgetBuilder<P1, P2> extends BaseWidgetBuilder<P1, WidgetBui
     public WidgetBuilder<P1, P2> withSuperProp1(final Builder<? extends P1> superProp1Builder) {
         this.superProp1Builder.set(superProp1Builder);
         return this;
+    }
+
+    public BuilderProperty<P2> getProp1() {
+        return prop1Builder;
+    }
+
+    public BuilderProperty<P2> getProp2() {
+        return prop2Builder;
+    }
+
+    public BuilderProperty<P1> getSuperProp1() {
+        return superProp1Builder;
     }
 
     @Override

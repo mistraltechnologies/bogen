@@ -3,6 +3,7 @@ import Widget.Final;
 import Widget.X;
 import com.mistraltech.bog.core.AbstractBuilder;
 import com.mistraltech.bog.core.Builder;
+import com.mistraltech.bog.core.BuilderProperty;
 import com.mistraltech.bog.core.ValueContainer;
 import com.mistraltech.bog.core.annotation.Builds;
 
@@ -109,6 +110,38 @@ public final class WidgetBuilder extends AbstractBuilder<Widget> {
     public WidgetBuilder withWildcardGenerics(final Builder<? extends Box<? extends X>> wildcardGenericsBuilder) {
         this.wildcardGenericsBuilder.set(wildcardGenericsBuilder);
         return this;
+    }
+
+    public BuilderProperty<Final> getFinalType() {
+        return finalTypeBuilder;
+    }
+
+    public BuilderProperty<Box<X>> getGenerics() {
+        return genericsBuilder;
+    }
+
+    public BuilderProperty<int[][]> getMultiDimensionalArray() {
+        return multiDimensionalArrayBuilder;
+    }
+
+    public BuilderProperty<Box<Box<? super X>>> getNestedWildcardGenerics() {
+        return nestedWildcardGenericsBuilder;
+    }
+
+    public BuilderProperty<Boolean> getPrimitive() {
+        return primitiveBuilder;
+    }
+
+    public BuilderProperty<Widget> getRecursiveType() {
+        return recursiveTypeBuilder;
+    }
+
+    public BuilderProperty<Box<?>> getUnboundedGenerics() {
+        return unboundedGenericsBuilder;
+    }
+
+    public BuilderProperty<Box<? extends X>> getWildcardGenerics() {
+        return wildcardGenericsBuilder;
     }
 
     @Override

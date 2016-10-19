@@ -1,9 +1,10 @@
 import com.mistraltech.bog.core.Builder;
+import com.mistraltech.bog.core.BuilderProperty;
 import com.mistraltech.bog.core.ValueContainer;
 import com.mistraltech.bog.core.annotation.Builds;
 
 @Builds(Widget.class)
-public class WidgetBuilder<R extends WidgetBuilder<R, T>, T extends Widget> extends BaseWidgetBuilder<R, T> {
+public abstract class WidgetBuilder<R extends WidgetBuilder<R, T>, T extends Widget> extends BaseWidgetBuilder<R, T> {
     private final ValueContainer<String> prop1Builder = new ValueContainer<>();
     private final ValueContainer<String> prop2Builder = new ValueContainer<>();
     private final ValueContainer<Integer> superProp1Builder = new ValueContainer<>(int.class);
@@ -60,8 +61,20 @@ public class WidgetBuilder<R extends WidgetBuilder<R, T>, T extends Widget> exte
         return self();
     }
 
+    public BuilderProperty<String> getProp1() {
+        return prop1Builder;
+    }
+
+    public BuilderProperty<String> getProp2() {
+        return prop2Builder;
+    }
+
+    public BuilderProperty<Integer> getSuperProp1() {
+        return superProp1Builder;
+    }
+
     @Override
-    protected void assign(final Widget instance) {
+    protected void assign(final T instance) {
         super.assign(instance);
         instance.setProp2(prop2Builder.value());
     }
@@ -75,8 +88,13 @@ public class WidgetBuilder<R extends WidgetBuilder<R, T>, T extends Widget> exte
     }
 
     public static class WidgetBuilderType extends WidgetBuilder<WidgetBuilderType, Widget> {
-        protected WidgetBuilderType(final Widget template) {
+        private WidgetBuilderType(final Widget template) {
             super(template);
+        }
+
+        @Override
+        protected Widget construct() {
+            return new Widget(getSuperProp1().value(), getProp1().value());
         }
     }
 }
