@@ -7,10 +7,12 @@ import static com.mistraltech.bog.proxy.javassist.JavassistBuilderGenerator.buil
 
 @Builds(Widget.class)
 public interface WidgetBuilder extends TwoPhaseBuilder<Widget> {
+    @SuppressWarnings("unchecked")
     static WidgetBuilder Widgetabc() {
         return builderOf(WidgetBuilder.class);
     }
 
+    @SuppressWarnings("unchecked")
     static WidgetBuilder Widgetdef(final Widget template) {
         return builderOf(WidgetBuilder.class).from(template);
     }

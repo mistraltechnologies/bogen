@@ -6,10 +6,12 @@ import static com.mistraltech.bog.proxy.javassist.JavassistBuilderGenerator.buil
 
 @Builds(Widget.class)
 public interface WidgetBuilder<R extends WidgetBuilder<R, T>, T extends Widget> extends BaseWidgetBuilder<R, T> {
+    @SuppressWarnings("unchecked")
     static WidgetBuilder<?, Widget> aWidget() {
         return builderOf(WidgetBuilder.class);
     }
 
+    @SuppressWarnings("unchecked")
     static WidgetBuilder<?, Widget> aWidgetFrom(final Widget template) {
         return builderOf(WidgetBuilder.class).from(template);
     }

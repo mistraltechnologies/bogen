@@ -6,6 +6,7 @@ import static com.mistraltech.bog.proxy.javassist.JavassistBuilderGenerator.buil
 
 @Builds(Widget.class)
 public interface WidgetBuilder extends BaseWidgetBuilder<WidgetBuilder, Widget> {
+    @SuppressWarnings("unchecked")
     static WidgetBuilder aWidget() {
         return builderOf(WidgetBuilder.class);
     }

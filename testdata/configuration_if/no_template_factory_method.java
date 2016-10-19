@@ -7,6 +7,7 @@ import static com.mistraltech.bog.proxy.javassist.JavassistBuilderGenerator.buil
 
 @Builds(Widget.class)
 public interface WidgetBuilder extends TwoPhaseBuilder<Widget> {
+    @SuppressWarnings("unchecked")
     static WidgetBuilder aWidget() {
         return builderOf(WidgetBuilder.class);
     }
