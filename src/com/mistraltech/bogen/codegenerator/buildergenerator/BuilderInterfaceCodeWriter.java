@@ -1,5 +1,6 @@
 package com.mistraltech.bogen.codegenerator.buildergenerator;
 
+import com.mistraltech.bogen.codegenerator.javabuilder.AnnotationBuilder;
 import com.mistraltech.bogen.codegenerator.javabuilder.InterfaceBuilder;
 import com.mistraltech.bogen.codegenerator.javabuilder.InterfaceMethodBuilder;
 import com.mistraltech.bogen.codegenerator.javabuilder.JavaDocumentBuilder;
@@ -154,6 +155,7 @@ public class BuilderInterfaceCodeWriter extends AbstractBuilderCodeWriter {
                 .withParameter(builderType.getTypeFQN() + ".class");
 
         return aMethod()
+                .withAnnotation(createSuppressAnnotation("\"unchecked\""))
                 .withStaticFlag(true)
                 .withReturnType(builderType)
                 .withTypeParameters(typeParameterDecls())
@@ -169,6 +171,7 @@ public class BuilderInterfaceCodeWriter extends AbstractBuilderCodeWriter {
                 .withParameter(builderType.getTypeFQN() + ".class");
 
         return aMethod()
+                .withAnnotation(createSuppressAnnotation("\"unchecked\""))
                 .withStaticFlag(true)
                 .withReturnType(builderType)
                 .withTypeParameters(typeParameterDecls())
@@ -182,6 +185,13 @@ public class BuilderInterfaceCodeWriter extends AbstractBuilderCodeWriter {
                                 .withObject(createCall)
                                 .withName("from")
                                 .withParameter("template")));
+    }
+
+    private AnnotationBuilder createSuppressAnnotation(String warning) {
+        return anAnnotation()
+                .withType(aType()
+                        .withName("java.lang.SuppressWarnings"))
+                .withParameter(expressionText(warning));
     }
 
     private MethodSignatureBuilder generateFromMethod(TypeBuilder returnType, TypeBuilder builtType) {
