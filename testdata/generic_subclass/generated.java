@@ -12,9 +12,9 @@ public final class WidgetBuilder<P1, P2> extends BaseWidgetBuilder<P1, WidgetBui
     private WidgetBuilder(final Widget<P1, P2> template) {
         super(template);
         if (template != null) {
-            withProp1(template.getProp1());
-            withProp2(template.getProp2());
-            withSuperProp1(template.getSuperProp1());
+            prop1Builder.set(template.getProp1());
+            prop2Builder.set(template.getProp2());
+            superProp1Builder.set(template.getSuperProp1());
         }
     }
 

@@ -11,7 +11,7 @@ public final class WidgetBuilder<P1> extends AbstractBuilder<Widget<P1>> {
     private WidgetBuilder(final Widget<P1> template) {
         super();
         if (template != null) {
-            withContents(template.getContents());
+            contentsBuilder.set(template.getContents());
         }
     }
 

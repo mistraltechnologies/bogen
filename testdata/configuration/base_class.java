@@ -11,7 +11,7 @@ public final class WidgetBuilder extends Blah<Widget> {
     private WidgetBuilder(final Widget template) {
         super();
         if (template != null) {
-            withProp(template.getProp());
+            propBuilder.set(template.getProp());
         }
     }
 

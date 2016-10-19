@@ -14,10 +14,10 @@ public final class WidgetBuilder extends AbstractBuilder<Widget> {
     private WidgetBuilder(final Widget template) {
         super();
         if (template != null) {
-            withProp1(template.getProp1());
-            withProp2(template.getProp2());
-            withSuperProp1(template.getSuperProp1());
-            withSuperProp2(template.getSuperProp2());
+            prop1Builder.set(template.getProp1());
+            prop2Builder.set(template.getProp2());
+            superProp1Builder.set(template.getSuperProp1());
+            superProp2Builder.set(template.getSuperProp2());
         }
     }
 

@@ -240,7 +240,8 @@ public class BuilderClassCodeWriter extends AbstractBuilderCodeWriter {
                         .filter(p -> p.getAccessorName().isPresent())
                         .forEach(p ->
                                 setFromTemplate.withStatement(aMethodCall()
-                                        .withName(setterMethodName(p))
+                                        .withObject(builderAttributeName(p))
+                                        .withName("set")
                                         .withParameter(aMethodCall()
                                                 .withObject("template")
                                                 .withName(p.getAccessorName().get()))));

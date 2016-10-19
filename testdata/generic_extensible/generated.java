@@ -12,8 +12,8 @@ public abstract class WidgetBuilder<P1, P2, R extends WidgetBuilder<P1, P2, R, T
     protected WidgetBuilder(final T template) {
         super();
         if (template != null) {
-            withP(template.getP());
-            withQ(template.getQ());
+            pBuilder.set(template.getP());
+            qBuilder.set(template.getQ());
         }
     }
 

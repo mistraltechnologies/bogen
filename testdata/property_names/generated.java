@@ -13,9 +13,9 @@ public final class WidgetBuilder extends AbstractBuilder<Widget> {
     private WidgetBuilder(final Widget template) {
         super();
         if (template != null) {
-            with_prop(template.get_prop());
-            withI(template.getI());
-            withURL(template.getURL());
+            _propBuilder.set(template.get_prop());
+            iBuilder.set(template.getI());
+            uRLBuilder.set(template.getURL());
         }
     }
 
