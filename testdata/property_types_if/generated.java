@@ -2,6 +2,7 @@ import Widget.Box;
 import Widget.Final;
 import Widget.X;
 import com.mistraltech.bog.core.Builder;
+import com.mistraltech.bog.core.BuilderProperty;
 import com.mistraltech.bog.core.TwoPhaseBuilder;
 import com.mistraltech.bog.core.annotation.Builds;
 
@@ -16,7 +17,7 @@ public interface WidgetBuilder extends TwoPhaseBuilder<Widget> {
 
     @SuppressWarnings("unchecked")
     static WidgetBuilder aWidgetFrom(final Widget template) {
-        return builderOf(WidgetBuilder.class).from(template);
+        return (WidgetBuilder) builderOf(WidgetBuilder.class).from(template);
     }
 
     WidgetBuilder from(Widget template);
@@ -52,4 +53,20 @@ public interface WidgetBuilder extends TwoPhaseBuilder<Widget> {
     WidgetBuilder withWildcardGenerics(Box<? extends X> wildcardGenerics);
 
     WidgetBuilder withWildcardGenerics(Builder<? extends Box<? extends X>> wildcardGenericsBuilder);
+
+    BuilderProperty<Final> getFinalType();
+
+    BuilderProperty<Box<X>> getGenerics();
+
+    BuilderProperty<int[][]> getMultiDimensionalArray();
+
+    BuilderProperty<Box<Box<? super X>>> getNestedWildcardGenerics();
+
+    BuilderProperty<Boolean> getPrimitive();
+
+    BuilderProperty<Widget> getRecursiveType();
+
+    BuilderProperty<Box<?>> getUnboundedGenerics();
+
+    BuilderProperty<Box<? extends X>> getWildcardGenerics();
 }

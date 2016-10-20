@@ -1,6 +1,7 @@
 package com.mistraltech.bogen.codegenerator.buildergenerator;
 
 import com.mistraltech.bogen.codegenerator.javabuilder.AnnotationBuilder;
+import com.mistraltech.bogen.codegenerator.javabuilder.CastBuilder;
 import com.mistraltech.bogen.codegenerator.javabuilder.InterfaceBuilder;
 import com.mistraltech.bogen.codegenerator.javabuilder.InterfaceMethodBuilder;
 import com.mistraltech.bogen.codegenerator.javabuilder.JavaDocumentBuilder;
@@ -10,6 +11,7 @@ import com.mistraltech.bogen.codegenerator.javabuilder.TypeBuilder;
 import com.mistraltech.bogen.codegenerator.javabuilder.TypeParameterDeclBuilder;
 import com.mistraltech.bogen.property.Property;
 import com.mistraltech.bogen.property.PropertyLocator;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,8 +20,11 @@ import java.util.TreeSet;
 
 import static com.mistraltech.bogen.codegenerator.buildergenerator.BuilderGenerator.BUILDER_SUPER_INTERFACE;
 import static com.mistraltech.bogen.codegenerator.javabuilder.AnnotationBuilder.anAnnotation;
+import static com.mistraltech.bogen.codegenerator.javabuilder.CastBuilder.aCast;
+import static com.mistraltech.bogen.codegenerator.javabuilder.ExpressionBuilder.anExpression;
 import static com.mistraltech.bogen.codegenerator.javabuilder.ExpressionTextBuilder.expressionText;
 import static com.mistraltech.bogen.codegenerator.javabuilder.FieldTermBuilder.aField;
+import static com.mistraltech.bogen.codegenerator.javabuilder.InterfaceBuilder.aJavaInterface;
 import static com.mistraltech.bogen.codegenerator.javabuilder.InterfaceMethodBuilder.anInterfaceMethod;
 import static com.mistraltech.bogen.codegenerator.javabuilder.MethodBuilder.aMethod;
 import static com.mistraltech.bogen.codegenerator.javabuilder.MethodCallBuilder.aMethodCall;
@@ -48,16 +53,11 @@ public class BuilderInterfaceCodeWriter extends AbstractBuilderCodeWriter {
     private InterfaceBuilder generateBuilderInterface() {
         final String generatedClassFQN = createFQN(getPackage().getQualifiedName(), generatorProperties.getClassName());
 
-        InterfaceBuilder clazz = InterfaceBuilder.aJavaInterface()
+        InterfaceBuilder clazz = aJavaInterface()
                 .withAccessModifier("public")
                 .withName(generatorProperties.getClassName())
                 .withTypeParameters(typeParameterDecls())
-                .withAnnotation(anAnnotation()
-                        .withType(aType()
-                                .withName("com.mistraltech.bog.core.annotation.Builds"))
-                        .withParameter(aField()
-                                .withType(getSourceClassFQName())
-                                .withField("class")));
+                .withAnnotation(buildsAnnotation());
 
         final TypeBuilder builtType = aType()
                 .withName(getSourceClassFQName())
@@ -77,16 +77,18 @@ public class BuilderInterfaceCodeWriter extends AbstractBuilderCodeWriter {
                                     .withName("R"))
                             .withTypeBinding(aTypeParameter()
                                     .withName("T")));
+
             returnType = returnTypeDecl.getType();
 
-            TypeParameterDeclBuilder builtTypeDecl = aTypeParameterDecl().withName("T")
+            TypeParameterDeclBuilder builtTypeDecl = aTypeParameterDecl()
+                    .withName("T")
                     .withExtends(builtType);
 
             builtTypeParam = builtTypeDecl.getType();
 
-            builderType = aType().withName(generatorProperties.getClassName())
-                    .withTypeBinding(aTypeParameter())
-                    .withTypeBinding(builtType);
+            builderType = aType()
+                    .withName(nestedClassName())
+                    .withTypeBindings(typeParameters());
 
             clazz.withTypeParameter(returnTypeDecl)
                     .withTypeParameter(builtTypeDecl);
@@ -128,6 +130,26 @@ public class BuilderInterfaceCodeWriter extends AbstractBuilderCodeWriter {
         }
 
         sourceClassProperties.forEach(p -> clazz.withMethods(generateBuilderSetters(p, returnType, constructorProperties.indexOf(p))));
+
+        sourceClassProperties.forEach(p -> clazz.withMethod(generateBuilderGetters(p)));
+
+        if (generatorProperties.isExtensible()) {
+            clazz.withNestedInterface(generateNestedInterface(builderType, builtType));
+        }
+    }
+
+    private InterfaceBuilder generateNestedInterface(TypeBuilder builderType, TypeBuilder builtType) {
+        InterfaceBuilder nestedInterface = aJavaInterface()
+                .withAnnotation(buildsAnnotation())
+                .withName(nestedClassName())
+                .withTypeParameters(typeParameterDecls())
+                .withImplementedInterface(aType()
+                        .withName(generatorProperties.getClassName())
+                        .withTypeBindings(typeParameters())
+                        .withTypeBinding(builderType)
+                        .withTypeBinding(builtType));
+
+        return nestedInterface;
     }
 
     private void applySuperInterface(InterfaceBuilder clazz, TypeBuilder returnType, TypeBuilder builtTypeParam) {
@@ -181,10 +203,14 @@ public class BuilderInterfaceCodeWriter extends AbstractBuilderCodeWriter {
                         .withType(builtType)
                         .withName("template"))
                 .withStatement(aReturnStatement()
-                        .withExpression(aMethodCall()
+                        .withExpression(anExpression()
+                                .withTerm(aCast()
+                                        .withType(builderType))
+                                .withTerm(
+                                aMethodCall()
                                 .withObject(createCall)
                                 .withName("from")
-                                .withParameter("template")));
+                                .withParameter("template"))));
     }
 
     private AnnotationBuilder createSuppressAnnotation(String warning) {
@@ -240,5 +266,27 @@ public class BuilderInterfaceCodeWriter extends AbstractBuilderCodeWriter {
         return methods;
     }
 
+    private InterfaceMethodBuilder generateBuilderGetters(@NotNull Property property) {
+        TypeBuilder returnType = aType()
+                .withName(EXPOSED_BUILDER_PROPERTY_TYPE_NAME)
+                .withTypeBinding(getPropertyTypeBuilder(property, true));
+
+        return anInterfaceMethod()
+                .withReturnType(returnType)
+                .withName(getterMethodName(property));
+    }
+
+    private AnnotationBuilder buildsAnnotation() {
+        return anAnnotation()
+                .withType(aType()
+                        .withName("com.mistraltech.bog.core.annotation.Builds"))
+                .withParameter(aField()
+                        .withType(getSourceClassFQName())
+                        .withField("class"));
+    }
+
+    private String nestedClassName() {
+        return generatorProperties.getClassName() + "Type";
+    }
 
 }

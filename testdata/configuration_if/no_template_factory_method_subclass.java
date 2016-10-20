@@ -1,4 +1,5 @@
 import com.mistraltech.bog.core.Builder;
+import com.mistraltech.bog.core.BuilderProperty;
 import com.mistraltech.bog.core.annotation.Builds;
 import com.mistraltech.bog.core.annotation.ConstructorParameter;
 
@@ -15,4 +16,6 @@ public interface WidgetBuilder extends BaseWidgetBuilder<WidgetBuilder, Widget> 
     WidgetBuilder withProp(String prop);
 
     WidgetBuilder withProp(Builder<? extends String> propBuilder);
+
+    BuilderProperty<String> getProp();
 }

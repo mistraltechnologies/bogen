@@ -32,6 +32,10 @@ public abstract class AbstractBuilderCodeWriter implements CodeWriter {
 
     public static final String BUILDER_TYPE_NAME = "com.mistraltech.bog.core.Builder";
 
+    public static final String CONCRETE_BUILDER_PROPERTY_TYPE_NAME = "com.mistraltech.bog.core.ValueContainer";
+
+    public static final String EXPOSED_BUILDER_PROPERTY_TYPE_NAME = "com.mistraltech.bog.core.BuilderProperty";
+
     public static final String DEFAULT_SETTER_METHOD_PREFIX = "with";
 
     public static final String DEFAULT_SETTER_METHOD_SUFFIX = "";

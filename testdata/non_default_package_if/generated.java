@@ -15,7 +15,7 @@ public interface WidgetBuilder extends TwoPhaseBuilder<Widget> {
 
     @SuppressWarnings("unchecked")
     static WidgetBuilder aWidgetFrom(final Widget template) {
-        return builderOf(com.acme.WidgetBuilder.class).from(template);
+        return (WidgetBuilder) builderOf(com.acme.WidgetBuilder.class).from(template);
     }
 
     WidgetBuilder from(Widget template);

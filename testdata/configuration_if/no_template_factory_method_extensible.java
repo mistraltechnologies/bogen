@@ -1,4 +1,5 @@
 import com.mistraltech.bog.core.Builder;
+import com.mistraltech.bog.core.BuilderProperty;
 import com.mistraltech.bog.core.TwoPhaseBuilder;
 import com.mistraltech.bog.core.annotation.Builds;
 import com.mistraltech.bog.core.annotation.ConstructorParameter;
@@ -8,12 +9,18 @@ import static com.mistraltech.bog.proxy.javassist.JavassistBuilderGenerator.buil
 @Builds(Widget.class)
 public interface WidgetBuilder<R extends WidgetBuilder<R, T>, T extends Widget> extends TwoPhaseBuilder<T> {
     @SuppressWarnings("unchecked")
-    static WidgetBuilder<?, Widget> aWidget() {
-        return builderOf(WidgetBuilder.class);
+    static WidgetBuilderType aWidget() {
+        return builderOf(WidgetBuilderType.class);
     }
 
     @ConstructorParameter(0)
     R withProp(String prop);
 
     R withProp(Builder<? extends String> propBuilder);
+
+    BuilderProperty<String> getProp();
+
+    @Builds(Widget.class)
+    interface WidgetBuilderType extends WidgetBuilder<WidgetBuilderType, Widget> {
+    }
 }

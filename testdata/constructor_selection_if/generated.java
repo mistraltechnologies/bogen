@@ -1,4 +1,5 @@
 import com.mistraltech.bog.core.Builder;
+import com.mistraltech.bog.core.BuilderProperty;
 import com.mistraltech.bog.core.TwoPhaseBuilder;
 import com.mistraltech.bog.core.annotation.Builds;
 import com.mistraltech.bog.core.annotation.ConstructorParameter;
@@ -14,7 +15,7 @@ public interface WidgetBuilder extends TwoPhaseBuilder<Widget> {
 
     @SuppressWarnings("unchecked")
     static WidgetBuilder aWidgetFrom(final Widget template) {
-        return builderOf(WidgetBuilder.class).from(template);
+        return (WidgetBuilder) builderOf(WidgetBuilder.class).from(template);
     }
 
     WidgetBuilder from(Widget template);
@@ -28,4 +29,8 @@ public interface WidgetBuilder extends TwoPhaseBuilder<Widget> {
     WidgetBuilder withProp2(String prop2);
 
     WidgetBuilder withProp2(Builder<? extends String> prop2Builder);
+
+    BuilderProperty<String> getProp1();
+
+    BuilderProperty<String> getProp2();
 }

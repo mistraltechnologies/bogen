@@ -1,4 +1,5 @@
 import com.mistraltech.bog.core.Builder;
+import com.mistraltech.bog.core.BuilderProperty;
 import com.mistraltech.bog.core.annotation.Builds;
 import com.mistraltech.bog.core.annotation.ConstructorParameter;
 
@@ -7,13 +8,13 @@ import static com.mistraltech.bog.proxy.javassist.JavassistBuilderGenerator.buil
 @Builds(Widget.class)
 public interface WidgetBuilder<P1, P2, R extends WidgetBuilder<P1, P2, R, T>, T extends Widget<P1, P2>> extends BaseWidgetBuilder<P1, R, T> {
     @SuppressWarnings("unchecked")
-    static <P1, P2> WidgetBuilder<?, Widget<P1, P2>> aWidget() {
-        return builderOf(WidgetBuilder.class);
+    static <P1, P2> WidgetBuilderType<P1, P2> aWidget() {
+        return builderOf(WidgetBuilderType.class);
     }
 
     @SuppressWarnings("unchecked")
-    static <P1, P2> WidgetBuilder<?, Widget<P1, P2>> aWidgetFrom(final Widget<P1, P2> template) {
-        return builderOf(WidgetBuilder.class).from(template);
+    static <P1, P2> WidgetBuilderType<P1, P2> aWidgetFrom(final Widget<P1, P2> template) {
+        return (WidgetBuilderType<P1, P2>) builderOf(WidgetBuilderType.class).from(template);
     }
 
     R from(Widget<P1, P2> template);
@@ -31,4 +32,14 @@ public interface WidgetBuilder<P1, P2, R extends WidgetBuilder<P1, P2, R, T>, T 
     R withSuperProp1(P1 superProp1);
 
     R withSuperProp1(Builder<? extends P1> superProp1Builder);
+
+    BuilderProperty<P2> getProp1();
+
+    BuilderProperty<P2> getProp2();
+
+    BuilderProperty<P1> getSuperProp1();
+
+    @Builds(Widget.class)
+    interface WidgetBuilderType<P1, P2> extends WidgetBuilder<P1, P2, WidgetBuilderType<P1, P2>, Widget<P1, P2>> {
+    }
 }

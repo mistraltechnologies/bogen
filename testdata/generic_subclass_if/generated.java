@@ -1,4 +1,5 @@
 import com.mistraltech.bog.core.Builder;
+import com.mistraltech.bog.core.BuilderProperty;
 import com.mistraltech.bog.core.annotation.Builds;
 import com.mistraltech.bog.core.annotation.ConstructorParameter;
 
@@ -13,7 +14,7 @@ public interface WidgetBuilder<P1, P2> extends BaseWidgetBuilder<P1, WidgetBuild
 
     @SuppressWarnings("unchecked")
     static <P1, P2> WidgetBuilder<P1, P2> aWidgetFrom(final Widget<P1, P2> template) {
-        return builderOf(WidgetBuilder.class).from(template);
+        return (WidgetBuilder<P1, P2>) builderOf(WidgetBuilder.class).from(template);
     }
 
     WidgetBuilder<P1, P2> from(Widget<P1, P2> template);
@@ -31,4 +32,10 @@ public interface WidgetBuilder<P1, P2> extends BaseWidgetBuilder<P1, WidgetBuild
     WidgetBuilder<P1, P2> withSuperProp1(P1 superProp1);
 
     WidgetBuilder<P1, P2> withSuperProp1(Builder<? extends P1> superProp1Builder);
+
+    BuilderProperty<P2> getProp1();
+
+    BuilderProperty<P2> getProp2();
+
+    BuilderProperty<P1> getSuperProp1();
 }

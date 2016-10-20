@@ -47,8 +47,6 @@ import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.toList;
 
 public class BuilderClassCodeWriter extends AbstractBuilderCodeWriter {
-    private static final String CONCRETE_BUILDER_PROPERTY_TYPE_NAME = "com.mistraltech.bog.core.ValueContainer";
-    private static final String EXPOSED_BUILDER_PROPERTY_TYPE_NAME = "com.mistraltech.bog.core.BuilderProperty";
 
     public BuilderClassCodeWriter(BuilderGeneratorProperties builderGeneratorProperties) {
         super(builderGeneratorProperties);
@@ -94,17 +92,19 @@ public class BuilderClassCodeWriter extends AbstractBuilderCodeWriter {
 
             returnType = returnTypeDecl.getType();
 
-            builtTypeParam = aTypeParameterDecl()
+            TypeParameterDeclBuilder builtTypeDecl = aTypeParameterDecl()
                     .withName("T")
-                    .withExtends(builtType)
-                    .getType();
+                    .withExtends(builtType);
 
-            builderType = aType().withName(nestedClassName()).withTypeBindings(typeParameters());
+            builtTypeParam = builtTypeDecl.getType();
+
+            builderType = aType()
+                    .withName(nestedClassName())
+                    .withTypeBindings(typeParameters());
 
             clazz.withAbstractFlag(true)
                     .withTypeParameter(returnTypeDecl)
-                    .withTypeParameter(aTypeParameterDecl().withName("T")
-                            .withExtends(builtType));
+                    .withTypeParameter(builtTypeDecl);
         } else {
             clazz.withFinalFlag(true);
             returnType = aType()
