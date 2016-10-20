@@ -7,6 +7,7 @@ import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiAnonymousClass;
 import com.intellij.psi.PsiClass;
+import com.intellij.psi.PsiClassType;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
@@ -178,6 +179,20 @@ public final class PsiUtils {
         }
 
         return targetClass;
+    }
+
+    /**
+     * Get the java class for a give PsiClassType.
+     *
+     * @param psiClassType the PsiClassType
+     * @return Optional of the equivalent java class if found or empty.
+     */
+    public static Optional<Class<?>> classFrom(PsiClassType psiClassType) {
+        try {
+            return Optional.of(Class.forName(psiClassType.getClassName()));
+        } catch (ClassNotFoundException e) {
+            return Optional.empty();
+        }
     }
 
     /**

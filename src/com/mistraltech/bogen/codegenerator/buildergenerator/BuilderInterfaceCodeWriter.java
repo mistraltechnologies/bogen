@@ -1,7 +1,6 @@
 package com.mistraltech.bogen.codegenerator.buildergenerator;
 
 import com.mistraltech.bogen.codegenerator.javabuilder.AnnotationBuilder;
-import com.mistraltech.bogen.codegenerator.javabuilder.CastBuilder;
 import com.mistraltech.bogen.codegenerator.javabuilder.InterfaceBuilder;
 import com.mistraltech.bogen.codegenerator.javabuilder.InterfaceMethodBuilder;
 import com.mistraltech.bogen.codegenerator.javabuilder.JavaDocumentBuilder;
@@ -207,10 +206,10 @@ public class BuilderInterfaceCodeWriter extends AbstractBuilderCodeWriter {
                                 .withTerm(aCast()
                                         .withType(builderType))
                                 .withTerm(
-                                aMethodCall()
-                                .withObject(createCall)
-                                .withName("from")
-                                .withParameter("template"))));
+                                        aMethodCall()
+                                                .withObject(createCall)
+                                                .withName("from")
+                                                .withParameter("template"))));
     }
 
     private AnnotationBuilder createSuppressAnnotation(String warning) {

@@ -6,7 +6,9 @@ import com.mistraltech.bog.core.annotation.Builds;
 
 @Builds(Widget.class)
 public final class WidgetBuilder extends AbstractBuilder<Widget> {
-    private final ValueContainer<String> propBuilder = new ValueContainer<>();
+    private final ValueContainer<String> prop1Builder = new ValueContainer<>();
+    private final ValueContainer<String> prop2Builder = new ValueContainer<>();
+    private final ValueContainer<String> prop3Builder = new ValueContainer<>();
 
     private WidgetBuilder(final Widget template) {
         super();
@@ -22,18 +24,46 @@ public final class WidgetBuilder extends AbstractBuilder<Widget> {
         return new WidgetBuilder(template);
     }
 
-    public WidgetBuilder withProp(final String prop) {
-        this.propBuilder.set(prop);
+    public WidgetBuilder withProp1(final String prop1) {
+        this.prop1Builder.set(prop1);
         return this;
     }
 
-    public WidgetBuilder withProp(final Builder<? extends String> propBuilder) {
-        this.propBuilder.set(propBuilder);
+    public WidgetBuilder withProp1(final Builder<? extends String> prop1Builder) {
+        this.prop1Builder.set(prop1Builder);
         return this;
     }
 
-    public BuilderProperty<String> getProp() {
-        return propBuilder;
+    public WidgetBuilder withProp2(final String prop2) {
+        this.prop2Builder.set(prop2);
+        return this;
+    }
+
+    public WidgetBuilder withProp2(final Builder<? extends String> prop2Builder) {
+        this.prop2Builder.set(prop2Builder);
+        return this;
+    }
+
+    public WidgetBuilder withProp3(final String prop3) {
+        this.prop3Builder.set(prop3);
+        return this;
+    }
+
+    public WidgetBuilder withProp3(final Builder<? extends String> prop3Builder) {
+        this.prop3Builder.set(prop3Builder);
+        return this;
+    }
+
+    public BuilderProperty<String> getProp1() {
+        return prop1Builder;
+    }
+
+    public BuilderProperty<String> getProp2() {
+        return prop2Builder;
+    }
+
+    public BuilderProperty<String> getProp3() {
+        return prop3Builder;
     }
 
     @Override
@@ -44,12 +74,20 @@ public final class WidgetBuilder extends AbstractBuilder<Widget> {
     @Override
     protected void assign(final Widget instance) {
         super.assign(instance);
-        instance.setProp(propBuilder.value());
+        try {
+            instance.setProp1(prop1Builder.value());
+            instance.setProp2(prop2Builder.value());
+            instance.setProp3(prop3Builder.value());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     protected void postUpdate() {
         super.postUpdate();
-        propBuilder.reset();
+        prop1Builder.reset();
+        prop2Builder.reset();
+        prop3Builder.reset();
     }
 }

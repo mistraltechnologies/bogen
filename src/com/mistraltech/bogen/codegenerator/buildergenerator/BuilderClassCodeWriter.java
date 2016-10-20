@@ -1,5 +1,7 @@
 package com.mistraltech.bogen.codegenerator.buildergenerator;
 
+import com.intellij.psi.PsiClassType;
+import com.intellij.psi.PsiMethod;
 import com.mistraltech.bogen.codegenerator.javabuilder.AbstractClassBuilder;
 import com.mistraltech.bogen.codegenerator.javabuilder.BlockStatementBuilder;
 import com.mistraltech.bogen.codegenerator.javabuilder.ClassBuilder;
@@ -10,18 +12,26 @@ import com.mistraltech.bogen.codegenerator.javabuilder.MethodBuilder;
 import com.mistraltech.bogen.codegenerator.javabuilder.MethodCallBuilder;
 import com.mistraltech.bogen.codegenerator.javabuilder.NestedClassBuilder;
 import com.mistraltech.bogen.codegenerator.javabuilder.NewInstanceBuilder;
+import com.mistraltech.bogen.codegenerator.javabuilder.ReturnStatementBuilder;
+import com.mistraltech.bogen.codegenerator.javabuilder.StatementBuilder;
+import com.mistraltech.bogen.codegenerator.javabuilder.StatementContainer;
+import com.mistraltech.bogen.codegenerator.javabuilder.TryCatchBuilder;
 import com.mistraltech.bogen.codegenerator.javabuilder.TypeBuilder;
 import com.mistraltech.bogen.codegenerator.javabuilder.TypeParameterDeclBuilder;
 import com.mistraltech.bogen.codegenerator.javabuilder.VariableBuilder;
 import com.mistraltech.bogen.property.Property;
 import com.mistraltech.bogen.property.PropertyLocator;
+import com.mistraltech.bogen.utils.PsiUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.java.generate.psi.PsiAdapter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Predicate;
 
 import static com.mistraltech.bogen.codegenerator.javabuilder.AnnotationBuilder.anAnnotation;
 import static com.mistraltech.bogen.codegenerator.javabuilder.BlockStatementBuilder.aBlockStatement;
@@ -37,6 +47,8 @@ import static com.mistraltech.bogen.codegenerator.javabuilder.NestedClassBuilder
 import static com.mistraltech.bogen.codegenerator.javabuilder.NewInstanceBuilder.aNewInstance;
 import static com.mistraltech.bogen.codegenerator.javabuilder.ParameterBuilder.aParameter;
 import static com.mistraltech.bogen.codegenerator.javabuilder.ReturnStatementBuilder.aReturnStatement;
+import static com.mistraltech.bogen.codegenerator.javabuilder.TryCatchBuilder.aTryCatch;
+import static com.mistraltech.bogen.codegenerator.javabuilder.TryCatchHandlerBuilder.aTryCatchHandler;
 import static com.mistraltech.bogen.codegenerator.javabuilder.TypeBuilder.VOID;
 import static com.mistraltech.bogen.codegenerator.javabuilder.TypeBuilder.aType;
 import static com.mistraltech.bogen.codegenerator.javabuilder.TypeParameterBuilder.aTypeParameter;
@@ -172,16 +184,30 @@ public class BuilderClassCodeWriter extends AbstractBuilderCodeWriter {
 
         sourceClassProperties.forEach(p -> clazz.withMethod(generateBuilderGetters(p)));
 
+        boolean constructorThrows = generatorProperties.getConstructor() != null &&
+                throwsCheckedException(generatorProperties.getConstructor());
+
         if (generatorProperties.isExtensible()) {
-            clazz.withNestedClass(generateNestedClass(builderType, builtType, constructorProperties));
+            clazz.withNestedClass(generateNestedClass(builderType, builtType, constructorProperties, constructorThrows));
         } else {
-            clazz.withMethod(generateConstructMethod(builtType, constructorProperties));
+            clazz.withMethod(generateConstructMethod(builtType, constructorProperties, constructorThrows));
         }
 
         clazz.withMethod(generateAssignMethod(builtTypeParam, sourceClassProperties));
 
         clazz.withMethod(generatePostUpdateMethod(builtType, sourceClassProperties));
 
+    }
+
+    private boolean throwsCheckedException(PsiMethod method) {
+        PsiClassType[] thrownTypes = method.getThrowsList().getReferencedTypes();
+
+        Predicate<Class<?>> isCheckedException =
+                c -> Exception.class.isAssignableFrom(c) && !RuntimeException.class.isAssignableFrom(c);
+
+        return Arrays.stream(thrownTypes)
+                .map(t -> PsiUtils.classFrom(t).orElse(Exception.class))
+                .anyMatch(isCheckedException);
     }
 
     private List<VariableBuilder> generateBuilderVariables(@NotNull Set<Property> properties) {
@@ -253,7 +279,9 @@ public class BuilderClassCodeWriter extends AbstractBuilderCodeWriter {
         return constructor;
     }
 
-    private NestedClassBuilder generateNestedClass(TypeBuilder builderType, TypeBuilder builtType, List<Property> constructorProperties) {
+    private NestedClassBuilder generateNestedClass(TypeBuilder builderType, TypeBuilder builtType,
+            List<Property> constructorProperties, boolean constructorThrows) {
+
         final MethodCallBuilder superCall = aMethodCall()
                 .withName("super");
 
@@ -273,7 +301,7 @@ public class BuilderClassCodeWriter extends AbstractBuilderCodeWriter {
                     .withName("template"));
         }
 
-        final MethodBuilder constructMethod = generateConstructMethod(builtType, constructorProperties);
+        final MethodBuilder constructMethod = generateConstructMethod(builtType, constructorProperties, constructorThrows);
 
         NestedClassBuilder nestedClass = aNestedClass()
                 .withAccessModifier("public")
@@ -403,6 +431,12 @@ public class BuilderClassCodeWriter extends AbstractBuilderCodeWriter {
     }
 
     private MethodBuilder generateAssignMethod(TypeBuilder builtType, Set<Property> properties) {
+        boolean throwsException = properties.stream()
+                .map(Property::getMutatorMethod)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .anyMatch(this::throwsCheckedException);
+
         final MethodBuilder assignMethod = aMethod()
                 .withAnnotation(anAnnotation()
                         .withType(aType()
@@ -420,11 +454,27 @@ public class BuilderClassCodeWriter extends AbstractBuilderCodeWriter {
                                 .withName("assign")
                                 .withParameter("instance")));
 
+        StatementContainer statementContainer;
+
+        if (throwsException) {
+            TryCatchBuilder tryCatchBuilder = aTryCatch()
+                    .withHandler(aTryCatchHandler()
+                            .withException(Exception.class)
+                            .withStatement(anExpressionStatement()
+                                    .withExpression(expressionText("throw new RuntimeException(e)"))));
+
+            assignMethod.withStatement(tryCatchBuilder);
+
+            statementContainer = tryCatchBuilder;
+        } else {
+            statementContainer = assignMethod;
+        }
+
         //noinspection OptionalGetWithoutIsPresent
         properties.stream()
                 .filter(p -> p.getMutatorName().isPresent())
                 .forEach(p ->
-                        assignMethod
+                        statementContainer
                                 .withStatement(anExpressionStatement()
                                         .withExpression(aMethodCall()
                                                 .withObject("instance")
@@ -435,7 +485,7 @@ public class BuilderClassCodeWriter extends AbstractBuilderCodeWriter {
         return assignMethod;
     }
 
-    private MethodBuilder generateConstructMethod(TypeBuilder builtType, List<Property> properties) {
+    private MethodBuilder generateConstructMethod(TypeBuilder builtType, List<Property> properties, boolean throwsException) {
         TypeBuilder returnType = aType()
                 .withName(generatorProperties.getSourceClass().getName());
 
@@ -463,8 +513,19 @@ public class BuilderClassCodeWriter extends AbstractBuilderCodeWriter {
                 constructorCall
                         .withParameter(getValueMethodCall(p, generatorProperties.isExtensible())));
 
-        constructMethod.withStatement(aReturnStatement()
-                .withExpression(constructorCall));
+        ReturnStatementBuilder returnStatement = aReturnStatement()
+                .withExpression(constructorCall);
+
+        StatementBuilder methodStatement = throwsException ?
+                aTryCatch()
+                        .withStatement(returnStatement)
+                        .withHandler(aTryCatchHandler()
+                                .withException(Exception.class)
+                                .withStatement(anExpressionStatement()
+                                        .withExpression(expressionText("throw new RuntimeException(e)")))) :
+                returnStatement;
+
+        constructMethod.withStatement(methodStatement);
 
         return constructMethod;
     }

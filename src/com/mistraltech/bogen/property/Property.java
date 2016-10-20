@@ -118,4 +118,14 @@ public class Property {
     public <T> T accept(PsiTypeVisitor<T> visitor) {
         return type.accept(visitor);
     }
+
+    @NotNull
+    public Optional<PsiMethod> getMutatorMethod() {
+        return mutatorMethod;
+    }
+
+    @NotNull
+    public Optional<PsiMethod> getAccessorMethod() {
+        return accessorMethod;
+    }
 }

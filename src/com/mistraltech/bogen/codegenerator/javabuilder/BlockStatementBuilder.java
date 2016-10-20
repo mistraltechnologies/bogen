@@ -5,7 +5,8 @@ import java.util.List;
 
 import static com.mistraltech.bogen.codegenerator.javabuilder.BuilderUtils.buildList;
 
-public class BlockStatementBuilder extends StatementBuilder<BlockStatementBuilder> {
+public class BlockStatementBuilder extends StatementBuilder<BlockStatementBuilder>
+        implements StatementContainer<BlockStatementBuilder> {
 
     private String headerText;
 
@@ -23,11 +24,13 @@ public class BlockStatementBuilder extends StatementBuilder<BlockStatementBuilde
         return this;
     }
 
+    @Override
     public BlockStatementBuilder withStatement(StatementBuilder statement) {
         statements.add(statement);
         return this;
     }
 
+    @Override
     public BlockStatementBuilder withStatement(ExpressionTermBuilder expression) {
         return withStatement(ExpressionStatementBuilder.anExpressionStatement().withExpression(expression));
     }

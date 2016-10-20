@@ -5,7 +5,7 @@ import java.util.List;
 
 import static com.mistraltech.bogen.codegenerator.javabuilder.BuilderUtils.buildList;
 
-public class MethodBuilder extends MethodSignatureBuilder<MethodBuilder> {
+public class MethodBuilder extends MethodSignatureBuilder<MethodBuilder> implements StatementContainer<MethodBuilder> {
     protected String accessModifier;
 
     private boolean staticFlag;
@@ -70,6 +70,11 @@ public class MethodBuilder extends MethodSignatureBuilder<MethodBuilder> {
     public MethodBuilder withStatement(StatementBuilder statement) {
         statements.add(statement);
         return self();
+    }
+
+    @Override
+    public MethodBuilder withStatement(ExpressionTermBuilder expression) {
+        return withStatement(ExpressionStatementBuilder.anExpressionStatement().withExpression(expression));
     }
 
     @Override
