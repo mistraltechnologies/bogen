@@ -26,12 +26,19 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class BuilderGeneratorOptionsPanel {
+
     private static final int PANEL_WIDTH_CHARS = 60;
 
     private static final String BOG_JAVASSIST_GENERATOR = "com.mistraltech.bog.proxy.javassist.JavassistBuilderGenerator";
+
+    private static final Pattern VERSION_PATTERN = Pattern.compile("\\d*\\.\\d*");
 
     private final BuilderGeneratorOptionsPanelDataSource dataSource;
 
@@ -279,19 +286,23 @@ public class BuilderGeneratorOptionsPanel {
     }
 
     private boolean isProjectJava8() {
-        final Project project = dataSource.getProject();
-        final Sdk projectSdk = ProjectRootManager.getInstance(project).getProjectSdk();
+        Project project = dataSource.getProject();
 
-        if (projectSdk == null) {
-            return false;
-        }
+        Optional<Sdk> projectSdk = Optional.ofNullable(ProjectRootManager.getInstance(project).getProjectSdk());
 
-        try {
-            final float ver = Float.parseFloat(projectSdk.getName());
-            return ver >= 1.8f;
-        } catch (Exception e) {
-            return false;
-        }
+        Optional<Matcher> versionMatcher = projectSdk
+                .map(Sdk::getVersionString)
+                .map(VERSION_PATTERN::matcher);
+
+        versionMatcher.ifPresent(Matcher::find);
+
+        boolean jdk18OrHigher = versionMatcher
+                .map(Matcher::group)
+                .map(Double::parseDouble)
+                .filter(d -> d >= 1.8D)
+                .isPresent();
+
+        return jdk18OrHigher;
     }
 
     private class ListItemWrapper<T> {
