@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/bogen.iml" filepath="$PROJECT_DIR$/bogen.iml" />
+      <module fileurl="file://$PROJECT_DIR$/testgenerated/testgenerated.iml" filepath="$PROJECT_DIR$/testgenerated/testgenerated.iml" />
     </modules>
   </component>
 </project>

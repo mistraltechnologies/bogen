@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="bog-javassist-1.0.0-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/mistraltech/bog/bog-javassist/1.0.0-SNAPSHOT/bog-javassist-1.0.0-SNAPSHOT.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

@@ -2,7 +2,7 @@
   <id>com.mistraltech.bogen</id>
   <name>BOG Builder Generator</name>
   <version>0.1</version>
-  <vendor email="support@mistraltech.co.uk">Mistral Technologies</vendor>
+  <vendor email="support@com.mistraltech.co.uk">Mistral Technologies</vendor>
 
   <description><![CDATA[
       <p>Generates a companion builder class for a selected Java class based on the BOG builder support library.
