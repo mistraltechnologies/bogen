@@ -3,6 +3,9 @@ import com.mistraltech.bog.core.BuilderProperty;
 import com.mistraltech.bog.core.annotation.Builds;
 import com.mistraltech.bog.core.annotation.ConstructorParameter;
 
+import java.util.function.Supplier;
+
+import static com.mistraltech.bog.core.picker.NaturalDefaultValuePicker.naturalDefault;
 import static com.mistraltech.bog.proxy.javassist.JavassistBuilderGenerator.builderOf;
 
 @Builds(Widget.class)
@@ -38,4 +41,16 @@ public interface WidgetBuilder<P1, P2> extends BaseWidgetBuilder<P1, WidgetBuild
     BuilderProperty<P2> getProp2();
 
     BuilderProperty<P1> getSuperProp1();
+
+    default Supplier<P2> getDefaultProp1() {
+        return naturalDefault(P2.class);
+    }
+
+    default Supplier<P2> getDefaultProp2() {
+        return naturalDefault(P2.class);
+    }
+
+    default Supplier<P1> getDefaultSuperProp1() {
+        return naturalDefault(P1.class);
+    }
 }

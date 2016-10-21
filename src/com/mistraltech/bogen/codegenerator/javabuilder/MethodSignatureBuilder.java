@@ -59,6 +59,10 @@ public abstract class MethodSignatureBuilder<T extends MethodSignatureBuilder<T>
         return false;
     }
 
+    protected boolean isDefault() {
+        return false;
+    }
+
     protected String getAccessModifier() {
         return null;
     }
@@ -103,6 +107,10 @@ public abstract class MethodSignatureBuilder<T extends MethodSignatureBuilder<T>
 
         if (isAbstract()) {
             sb.append("abstract ");
+        }
+
+        if (isDefault()) {
+            sb.append("default ");
         }
 
         sb.append(buildList(context, "<", typeParameters, ">", ", "));

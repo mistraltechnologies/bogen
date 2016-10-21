@@ -4,6 +4,9 @@ import com.mistraltech.bog.core.TwoPhaseBuilder;
 import com.mistraltech.bog.core.annotation.Builds;
 import com.mistraltech.bog.core.annotation.ConstructorParameter;
 
+import java.util.function.Supplier;
+
+import static com.mistraltech.bog.core.picker.NaturalDefaultValuePicker.naturalDefault;
 import static com.mistraltech.bog.proxy.javassist.JavassistBuilderGenerator.builderOf;
 
 @Builds(Widget.class)
@@ -33,4 +36,12 @@ public interface WidgetBuilder extends TwoPhaseBuilder<Widget> {
     BuilderProperty<String> getProp1();
 
     BuilderProperty<String> getProp2();
+
+    default Supplier<String> getDefaultProp1() {
+        return naturalDefault(String.class);
+    }
+
+    default Supplier<String> getDefaultProp2() {
+        return naturalDefault(String.class);
+    }
 }

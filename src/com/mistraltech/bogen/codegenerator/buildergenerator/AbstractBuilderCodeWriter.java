@@ -142,10 +142,7 @@ public abstract class AbstractBuilderCodeWriter implements CodeWriter {
         return "get" + property.getCapitalisedName();
     }
 
-    protected String getMatchedObjectDescription() {
-        return generatorProperties.getFactoryMethodPrefix().isEmpty() ?
-                getSourceClassName() :
-                generatorProperties.getFactoryMethodPrefix() + " " + getSourceClassName();
+    protected String defaultGetterMethodName(@NotNull Property property) {
+        return "getDefault" + property.getCapitalisedName();
     }
-
 }

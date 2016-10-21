@@ -1,9 +1,11 @@
 package com.mistraltech.bogen.codegenerator.buildergenerator;
 
 import com.mistraltech.bogen.codegenerator.javabuilder.AnnotationBuilder;
+import com.mistraltech.bogen.codegenerator.javabuilder.ExpressionBuilder;
 import com.mistraltech.bogen.codegenerator.javabuilder.InterfaceBuilder;
 import com.mistraltech.bogen.codegenerator.javabuilder.InterfaceMethodBuilder;
 import com.mistraltech.bogen.codegenerator.javabuilder.JavaDocumentBuilder;
+import com.mistraltech.bogen.codegenerator.javabuilder.MethodBuilder;
 import com.mistraltech.bogen.codegenerator.javabuilder.MethodSignatureBuilder;
 import com.mistraltech.bogen.codegenerator.javabuilder.StaticMethodCallBuilder;
 import com.mistraltech.bogen.codegenerator.javabuilder.TypeBuilder;
@@ -30,6 +32,7 @@ import static com.mistraltech.bogen.codegenerator.javabuilder.MethodCallBuilder.
 import static com.mistraltech.bogen.codegenerator.javabuilder.ParameterBuilder.aParameter;
 import static com.mistraltech.bogen.codegenerator.javabuilder.ReturnStatementBuilder.aReturnStatement;
 import static com.mistraltech.bogen.codegenerator.javabuilder.StaticMethodCallBuilder.aStaticMethodCall;
+import static com.mistraltech.bogen.codegenerator.javabuilder.StaticVariableReaderBuilder.aStaticVariable;
 import static com.mistraltech.bogen.codegenerator.javabuilder.TypeBuilder.aType;
 import static com.mistraltech.bogen.codegenerator.javabuilder.TypeParameterBuilder.aTypeParameter;
 import static com.mistraltech.bogen.codegenerator.javabuilder.TypeParameterDeclBuilder.aTypeParameterDecl;
@@ -131,6 +134,8 @@ public class BuilderInterfaceCodeWriter extends AbstractBuilderCodeWriter {
         sourceClassProperties.forEach(p -> clazz.withMethods(generateBuilderSetters(p, returnType, constructorProperties.indexOf(p))));
 
         sourceClassProperties.forEach(p -> clazz.withMethod(generateBuilderGetters(p)));
+
+        sourceClassProperties.forEach(p -> clazz.withMethod(generateBuilderDefaultGetter(p)));
 
         if (generatorProperties.isExtensible()) {
             clazz.withNestedInterface(generateNestedInterface(builderType, builtType));
@@ -274,6 +279,32 @@ public class BuilderInterfaceCodeWriter extends AbstractBuilderCodeWriter {
                 .withReturnType(returnType)
                 .withName(getterMethodName(property));
     }
+
+    private MethodBuilder generateBuilderDefaultGetter(@NotNull Property property) {
+        TypeBuilder boxedPropertyType = getPropertyTypeBuilder(property, true);
+        TypeBuilder unboxedPropertyType = getPropertyTypeBuilder(property, false);
+
+        TypeBuilder returnType = aType()
+                .withName("java.util.function.Supplier")
+                .withTypeBinding(boxedPropertyType);
+
+        ExpressionBuilder defaultLambda = anExpression()
+                .withTerm(aStaticMethodCall()
+                        .withType(aType()
+                                .withName("com.mistraltech.bog.core.picker.NaturalDefaultValuePicker"))
+                        .withName("naturalDefault")
+                        .withParameter(aStaticVariable()
+                                .withType(unboxedPropertyType)
+                                .withName("class")));
+
+        return aMethod()
+                .withDefaultFlag(true)
+                .withReturnType(returnType)
+                .withName(defaultGetterMethodName(property))
+                .withStatement(aReturnStatement()
+                        .withExpression(defaultLambda));
+    }
+
 
     private AnnotationBuilder buildsAnnotation() {
         return anAnnotation()
