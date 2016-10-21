@@ -1,15 +1,15 @@
 package com.mistraltech.bogen.bench.property_types_if;
 
-import com.mistraltech.bogen.bench.model.WidgetC;
 import com.mistraltech.bog.core.Builder;
 import com.mistraltech.bog.core.BuilderProperty;
 import com.mistraltech.bog.core.TwoPhaseBuilder;
 import com.mistraltech.bog.core.annotation.Builds;
 import com.mistraltech.bog.core.annotation.ConstructorParameter;
+import com.mistraltech.bogen.bench.model.WidgetC;
 
 import java.util.function.Supplier;
 
-import static com.mistraltech.bog.core.picker.NaturalDefaultValuePicker.naturalDefault;
+import static com.mistraltech.bog.core.picker.SingleValuePicker.singleValuePicker;
 import static com.mistraltech.bog.proxy.javassist.JavassistBuilderGenerator.builderOf;
 
 @Builds(WidgetC.class)
@@ -21,7 +21,7 @@ public interface WidgetCBuilder extends TwoPhaseBuilder<WidgetC> {
 
     @SuppressWarnings("unchecked")
     static WidgetCBuilder aWidgetCFrom(final WidgetC template) {
-        return (WidgetCBuilder) builderOf(WidgetCBuilder.class).from(template);
+        return builderOf(WidgetCBuilder.class).from(template);
     }
 
     WidgetCBuilder from(WidgetC template);
@@ -76,30 +76,30 @@ public interface WidgetCBuilder extends TwoPhaseBuilder<WidgetC> {
     BuilderProperty<Short> getS();
 
     default Supplier<String> getDefaultA() {
-        return naturalDefault(String.class);
+        return singleValuePicker(null);
     }
 
     default Supplier<Byte> getDefaultB() {
-        return naturalDefault(byte.class);
+        return singleValuePicker((byte) 0);
     }
 
     default Supplier<Character> getDefaultC() {
-        return naturalDefault(char.class);
+        return singleValuePicker('\0');
     }
 
     default Supplier<Double> getDefaultD() {
-        return naturalDefault(double.class);
+        return singleValuePicker(0.0D);
     }
 
     default Supplier<Float> getDefaultF() {
-        return naturalDefault(float.class);
+        return singleValuePicker(0.0F);
     }
 
     default Supplier<Integer> getDefaultI() {
-        return naturalDefault(int.class);
+        return singleValuePicker(0);
     }
 
     default Supplier<Short> getDefaultS() {
-        return naturalDefault(short.class);
+        return singleValuePicker((short) 0);
     }
 }

@@ -1,12 +1,15 @@
 package com.mistraltech.bogen.bench.complete_generic_subclass_if;
 
-import com.mistraltech.bogen.bench.model.SubWidgetB;
 import com.mistraltech.bog.core.Builder;
 import com.mistraltech.bog.core.BuilderProperty;
 import com.mistraltech.bog.core.TwoPhaseBuilder;
 import com.mistraltech.bog.core.annotation.Builds;
 import com.mistraltech.bog.core.annotation.ConstructorParameter;
+import com.mistraltech.bogen.bench.model.SubWidgetB;
 
+import java.util.function.Supplier;
+
+import static com.mistraltech.bog.core.picker.SingleValuePicker.singleValuePicker;
 import static com.mistraltech.bog.proxy.javassist.JavassistBuilderGenerator.builderOf;
 
 @Builds(SubWidgetB.class)
@@ -48,4 +51,20 @@ public interface SubWidgetBBuilder<P1> extends TwoPhaseBuilder<SubWidgetB<P1>> {
     BuilderProperty<P1> getProp3();
 
     BuilderProperty<P1> getProp4();
+
+    default Supplier<P1> getDefaultProp1() {
+        return singleValuePicker(null);
+    }
+
+    default Supplier<P1> getDefaultProp2() {
+        return singleValuePicker(null);
+    }
+
+    default Supplier<P1> getDefaultProp3() {
+        return singleValuePicker(null);
+    }
+
+    default Supplier<P1> getDefaultProp4() {
+        return singleValuePicker(null);
+    }
 }

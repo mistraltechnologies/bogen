@@ -8,7 +8,7 @@ import com.mistraltech.bog.core.annotation.Builds;
 
 import java.util.function.Supplier;
 
-import static com.mistraltech.bog.core.picker.NaturalDefaultValuePicker.naturalDefault;
+import static com.mistraltech.bog.core.picker.SingleValuePicker.singleValuePicker;
 import static com.mistraltech.bog.proxy.javassist.JavassistBuilderGenerator.builderOf;
 
 @Builds(Widget.class)
@@ -20,7 +20,7 @@ public interface WidgetBuilder extends TwoPhaseBuilder<Widget> {
 
     @SuppressWarnings("unchecked")
     static WidgetBuilder aWidgetFrom(final Widget template) {
-        return (WidgetBuilder) builderOf(WidgetBuilder.class).from(template);
+        return builderOf(WidgetBuilder.class).from(template);
     }
 
     WidgetBuilder from(Widget template);
@@ -74,34 +74,34 @@ public interface WidgetBuilder extends TwoPhaseBuilder<Widget> {
     BuilderProperty<Box<? extends X>> getWildcardGenerics();
 
     default Supplier<Final> getDefaultFinalType() {
-        return naturalDefault(Final.class);
+        return singleValuePicker(null);
     }
 
     default Supplier<Box<X>> getDefaultGenerics() {
-        return naturalDefault(Box.class);
+        return singleValuePicker(null);
     }
 
     default Supplier<int[][]> getDefaultMultiDimensionalArray() {
-        return naturalDefault(int.class);
+        return singleValuePicker(null);
     }
 
     default Supplier<Box<Box<? super X>>> getDefaultNestedWildcardGenerics() {
-        return naturalDefault(Box.class);
+        return singleValuePicker(null);
     }
 
     default Supplier<Boolean> getDefaultPrimitive() {
-        return naturalDefault(boolean.class);
+        return singleValuePicker(null);
     }
 
     default Supplier<Widget> getDefaultRecursiveType() {
-        return naturalDefault(Widget.class);
+        return singleValuePicker(null);
     }
 
     default Supplier<Box<?>> getDefaultUnboundedGenerics() {
-        return naturalDefault(Box.class);
+        return singleValuePicker(null);
     }
 
     default Supplier<Box<? extends X>> getDefaultWildcardGenerics() {
-        return naturalDefault(Box.class);
+        return singleValuePicker(null);
     }
 }

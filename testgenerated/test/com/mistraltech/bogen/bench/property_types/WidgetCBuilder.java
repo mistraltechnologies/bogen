@@ -1,20 +1,26 @@
 package com.mistraltech.bogen.bench.property_types;
 
-import com.mistraltech.bogen.bench.model.WidgetC;
 import com.mistraltech.bog.core.AbstractBuilder;
 import com.mistraltech.bog.core.Builder;
 import com.mistraltech.bog.core.BuilderProperty;
 import com.mistraltech.bog.core.ValueContainer;
 import com.mistraltech.bog.core.annotation.Builds;
+import com.mistraltech.bogen.bench.model.WidgetC;
 
 @Builds(WidgetC.class)
 public final class WidgetCBuilder extends AbstractBuilder<WidgetC> {
     private final ValueContainer<String> aBuilder = new ValueContainer<>();
+
     private final ValueContainer<Byte> bBuilder = new ValueContainer<>(byte.class);
+
     private final ValueContainer<Character> cBuilder = new ValueContainer<>(char.class);
+
     private final ValueContainer<Double> dBuilder = new ValueContainer<>(double.class);
+
     private final ValueContainer<Float> fBuilder = new ValueContainer<>(float.class);
+
     private final ValueContainer<Integer> iBuilder = new ValueContainer<>(int.class);
+
     private final ValueContainer<Short> sBuilder = new ValueContainer<>(short.class);
 
     private WidgetCBuilder(final WidgetC template) {

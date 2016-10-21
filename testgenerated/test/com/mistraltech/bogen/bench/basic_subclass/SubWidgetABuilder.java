@@ -1,14 +1,15 @@
 package com.mistraltech.bogen.bench.basic_subclass;
 
-import com.mistraltech.bogen.bench.model.SubWidgetA;
 import com.mistraltech.bog.core.Builder;
 import com.mistraltech.bog.core.BuilderProperty;
 import com.mistraltech.bog.core.ValueContainer;
 import com.mistraltech.bog.core.annotation.Builds;
+import com.mistraltech.bogen.bench.model.SubWidgetA;
 
 @Builds(SubWidgetA.class)
 public final class SubWidgetABuilder extends WidgetABuilder<SubWidgetABuilder, SubWidgetA> {
     private final ValueContainer<String> prop1Builder = new ValueContainer<>();
+
     private final ValueContainer<String> prop3Builder = new ValueContainer<>();
 
     private SubWidgetABuilder(final SubWidgetA template) {

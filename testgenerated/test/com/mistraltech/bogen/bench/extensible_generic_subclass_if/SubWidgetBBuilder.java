@@ -1,11 +1,14 @@
 package com.mistraltech.bogen.bench.extensible_generic_subclass_if;
 
-import com.mistraltech.bogen.bench.model.SubWidgetB;
 import com.mistraltech.bog.core.Builder;
 import com.mistraltech.bog.core.BuilderProperty;
 import com.mistraltech.bog.core.annotation.Builds;
 import com.mistraltech.bog.core.annotation.ConstructorParameter;
+import com.mistraltech.bogen.bench.model.SubWidgetB;
 
+import java.util.function.Supplier;
+
+import static com.mistraltech.bog.core.picker.SingleValuePicker.singleValuePicker;
 import static com.mistraltech.bog.proxy.javassist.JavassistBuilderGenerator.builderOf;
 
 @Builds(SubWidgetB.class)
@@ -41,6 +44,18 @@ public interface SubWidgetBBuilder<P1, R extends SubWidgetBBuilder<P1, R, T>, T 
     BuilderProperty<P1> getProp3();
 
     BuilderProperty<P1> getProp4();
+
+    default Supplier<P1> getDefaultProp1() {
+        return singleValuePicker(null);
+    }
+
+    default Supplier<P1> getDefaultProp3() {
+        return singleValuePicker(null);
+    }
+
+    default Supplier<P1> getDefaultProp4() {
+        return singleValuePicker(null);
+    }
 
     @Builds(SubWidgetB.class)
     interface SubWidgetBBuilderType<P1> extends SubWidgetBBuilder<P1, SubWidgetBBuilderType<P1>, SubWidgetB<P1>> {

@@ -6,7 +6,7 @@ import com.mistraltech.bog.core.annotation.ConstructorParameter;
 
 import java.util.function.Supplier;
 
-import static com.mistraltech.bog.core.picker.NaturalDefaultValuePicker.naturalDefault;
+import static com.mistraltech.bog.core.picker.SingleValuePicker.singleValuePicker;
 import static com.mistraltech.bog.proxy.javassist.JavassistBuilderGenerator.builderOf;
 
 @Builds(Widget.class)
@@ -37,11 +37,11 @@ public interface WidgetBuilder<P1, P2, R extends WidgetBuilder<P1, P2, R, T>, T 
     BuilderProperty<P2> getQ();
 
     default Supplier<P1> getDefaultP() {
-        return naturalDefault(P1.class);
+        return singleValuePicker(null);
     }
 
     default Supplier<P2> getDefaultQ() {
-        return naturalDefault(P2.class);
+        return singleValuePicker(null);
     }
 
     @Builds(Widget.class)

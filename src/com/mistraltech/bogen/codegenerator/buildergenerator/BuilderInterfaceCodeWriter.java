@@ -11,6 +11,8 @@ import com.mistraltech.bogen.codegenerator.javabuilder.StaticMethodCallBuilder;
 import com.mistraltech.bogen.codegenerator.javabuilder.StaticVariableReaderBuilder;
 import com.mistraltech.bogen.codegenerator.javabuilder.TypeBuilder;
 import com.mistraltech.bogen.codegenerator.javabuilder.TypeParameterDeclBuilder;
+import com.mistraltech.bogen.codegenerator.utils.InitialValueTypeConverter;
+import com.mistraltech.bogen.codegenerator.utils.PsiTypeConverter;
 import com.mistraltech.bogen.property.Property;
 import com.mistraltech.bogen.property.PropertyLocator;
 import org.jetbrains.annotations.NotNull;
@@ -288,9 +290,14 @@ public class BuilderInterfaceCodeWriter extends AbstractBuilderCodeWriter {
                 .withName(getterMethodName(property));
     }
 
+    protected String getPropertyDefaultValue(@NotNull Property property) {
+        return property.accept(new InitialValueTypeConverter());
+    }
+
+
     private MethodBuilder generateBuilderDefaultGetter(@NotNull Property property) {
         TypeBuilder boxedPropertyType = getPropertyTypeBuilder(property, true);
-        TypeBuilder unboxedPropertyType = getPropertyTypeBuilder(property, false);
+        String defaultValue = getPropertyDefaultValue(property);
 
         TypeBuilder returnType = aType()
                 .withName("java.util.function.Supplier")
@@ -299,11 +306,9 @@ public class BuilderInterfaceCodeWriter extends AbstractBuilderCodeWriter {
         ExpressionBuilder defaultLambda = anExpression()
                 .withTerm(aStaticMethodCall()
                         .withType(aType()
-                                .withName("com.mistraltech.bog.core.picker.NaturalDefaultValuePicker"))
-                        .withName("naturalDefault")
-                        .withParameter(aStaticVariable()
-                                .withType(unboxedPropertyType)
-                                .withName("class")));
+                                .withName("com.mistraltech.bog.core.picker.SingleValuePicker"))
+                        .withName("singleValuePicker")
+                        .withParameter(defaultValue));
 
         return aMethod()
                 .withDefaultFlag(true)

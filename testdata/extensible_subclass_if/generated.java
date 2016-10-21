@@ -5,7 +5,7 @@ import com.mistraltech.bog.core.annotation.ConstructorParameter;
 
 import java.util.function.Supplier;
 
-import static com.mistraltech.bog.core.picker.NaturalDefaultValuePicker.naturalDefault;
+import static com.mistraltech.bog.core.picker.SingleValuePicker.singleValuePicker;
 import static com.mistraltech.bog.proxy.javassist.JavassistBuilderGenerator.builderOf;
 
 @Builds(Widget.class)
@@ -17,7 +17,7 @@ public interface WidgetBuilder<R extends WidgetBuilder<R, T>, T extends Widget> 
 
     @SuppressWarnings("unchecked")
     static WidgetBuilderType aWidgetFrom(final Widget template) {
-        return (WidgetBuilderType) builderOf(WidgetBuilderType.class).from(template);
+        return builderOf(WidgetBuilderType.class).from(template);
     }
 
     R from(Widget template);
@@ -43,15 +43,15 @@ public interface WidgetBuilder<R extends WidgetBuilder<R, T>, T extends Widget> 
     BuilderProperty<Integer> getSuperProp1();
 
     default Supplier<String> getDefaultProp1() {
-        return naturalDefault(String.class);
+        return singleValuePicker(null);
     }
 
     default Supplier<String> getDefaultProp2() {
-        return naturalDefault(String.class);
+        return singleValuePicker(null);
     }
 
     default Supplier<Integer> getDefaultSuperProp1() {
-        return naturalDefault(int.class);
+        return singleValuePicker(0);
     }
 
     @Builds(Widget.class)

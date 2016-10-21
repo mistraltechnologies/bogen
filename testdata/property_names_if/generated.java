@@ -6,7 +6,7 @@ import com.mistraltech.bog.core.annotation.ConstructorParameter;
 
 import java.util.function.Supplier;
 
-import static com.mistraltech.bog.core.picker.NaturalDefaultValuePicker.naturalDefault;
+import static com.mistraltech.bog.core.picker.SingleValuePicker.singleValuePicker;
 import static com.mistraltech.bog.proxy.javassist.JavassistBuilderGenerator.builderOf;
 
 @Builds(Widget.class)
@@ -18,7 +18,7 @@ public interface WidgetBuilder extends TwoPhaseBuilder<Widget> {
 
     @SuppressWarnings("unchecked")
     static WidgetBuilder aWidgetFrom(final Widget template) {
-        return (WidgetBuilder) builderOf(WidgetBuilder.class).from(template);
+        return builderOf(WidgetBuilder.class).from(template);
     }
 
     WidgetBuilder from(Widget template);
@@ -45,14 +45,14 @@ public interface WidgetBuilder extends TwoPhaseBuilder<Widget> {
     BuilderProperty<String> getURL();
 
     default Supplier<String> getDefault_prop() {
-        return naturalDefault(String.class);
+        return singleValuePicker(null);
     }
 
     default Supplier<String> getDefaultI() {
-        return naturalDefault(String.class);
+        return singleValuePicker(null);
     }
 
     default Supplier<String> getDefaultURL() {
-        return naturalDefault(String.class);
+        return singleValuePicker(null);
     }
 }

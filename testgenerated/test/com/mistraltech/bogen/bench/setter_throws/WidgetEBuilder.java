@@ -1,15 +1,16 @@
 package com.mistraltech.bogen.bench.setter_throws;
 
-import com.mistraltech.bogen.bench.model.WidgetE;
 import com.mistraltech.bog.core.AbstractBuilder;
 import com.mistraltech.bog.core.Builder;
 import com.mistraltech.bog.core.BuilderProperty;
 import com.mistraltech.bog.core.ValueContainer;
 import com.mistraltech.bog.core.annotation.Builds;
+import com.mistraltech.bogen.bench.model.WidgetE;
 
 @Builds(WidgetE.class)
 public final class WidgetEBuilder extends AbstractBuilder<WidgetE> {
     private final ValueContainer<String> prop1Builder = new ValueContainer<>();
+
     private final ValueContainer<String> prop2Builder = new ValueContainer<>();
 
     private WidgetEBuilder(final WidgetE template) {

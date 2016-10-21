@@ -1,8 +1,8 @@
 package com.mistraltech.bogen.bench.minimal_class;
 
-import com.mistraltech.bogen.bench.model.WidgetD;
 import com.mistraltech.bog.core.AbstractBuilder;
 import com.mistraltech.bog.core.annotation.Builds;
+import com.mistraltech.bogen.bench.model.WidgetD;
 
 @Builds(WidgetD.class)
 public final class WidgetDBuilder extends AbstractBuilder<WidgetD> {

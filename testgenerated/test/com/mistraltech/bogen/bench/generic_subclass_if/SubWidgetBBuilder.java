@@ -1,11 +1,14 @@
 package com.mistraltech.bogen.bench.generic_subclass_if;
 
-import com.mistraltech.bogen.bench.model.SubWidgetB;
 import com.mistraltech.bog.core.Builder;
 import com.mistraltech.bog.core.BuilderProperty;
 import com.mistraltech.bog.core.annotation.Builds;
 import com.mistraltech.bog.core.annotation.ConstructorParameter;
+import com.mistraltech.bogen.bench.model.SubWidgetB;
 
+import java.util.function.Supplier;
+
+import static com.mistraltech.bog.core.picker.SingleValuePicker.singleValuePicker;
 import static com.mistraltech.bog.proxy.javassist.JavassistBuilderGenerator.builderOf;
 
 @Builds(SubWidgetB.class)
@@ -17,7 +20,7 @@ public interface SubWidgetBBuilder<P1> extends WidgetBBuilder<P1, SubWidgetBBuil
 
     @SuppressWarnings("unchecked")
     static <P1> SubWidgetBBuilder<P1> aSubWidgetBFrom(final SubWidgetB<P1> template) {
-        return (SubWidgetBBuilder<P1>) builderOf(SubWidgetBBuilder.class).from(template);
+        return builderOf(SubWidgetBBuilder.class).from(template);
     }
 
     SubWidgetBBuilder<P1> from(SubWidgetB<P1> template);
@@ -41,4 +44,16 @@ public interface SubWidgetBBuilder<P1> extends WidgetBBuilder<P1, SubWidgetBBuil
     BuilderProperty<P1> getProp3();
 
     BuilderProperty<P1> getProp4();
+
+    default Supplier<P1> getDefaultProp1() {
+        return singleValuePicker(null);
+    }
+
+    default Supplier<P1> getDefaultProp3() {
+        return singleValuePicker(null);
+    }
+
+    default Supplier<P1> getDefaultProp4() {
+        return singleValuePicker(null);
+    }
 }
