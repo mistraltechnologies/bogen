@@ -18,7 +18,7 @@ public interface SubWidgetBBuilder<P1> extends TwoPhaseBuilder<SubWidgetB<P1>> {
 
     @SuppressWarnings("unchecked")
     static <P1> SubWidgetBBuilder<P1> aSubWidgetBFrom(final SubWidgetB<P1> template) {
-        return (SubWidgetBBuilder<P1>) builderOf(SubWidgetBBuilder.class).from(template);
+        return builderOf(SubWidgetBBuilder.class).from(template);
     }
 
     SubWidgetBBuilder<P1> from(SubWidgetB<P1> template);

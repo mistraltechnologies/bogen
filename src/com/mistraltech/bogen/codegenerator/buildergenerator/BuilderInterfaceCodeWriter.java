@@ -8,6 +8,7 @@ import com.mistraltech.bogen.codegenerator.javabuilder.JavaDocumentBuilder;
 import com.mistraltech.bogen.codegenerator.javabuilder.MethodBuilder;
 import com.mistraltech.bogen.codegenerator.javabuilder.MethodSignatureBuilder;
 import com.mistraltech.bogen.codegenerator.javabuilder.StaticMethodCallBuilder;
+import com.mistraltech.bogen.codegenerator.javabuilder.StaticVariableReaderBuilder;
 import com.mistraltech.bogen.codegenerator.javabuilder.TypeBuilder;
 import com.mistraltech.bogen.codegenerator.javabuilder.TypeParameterDeclBuilder;
 import com.mistraltech.bogen.property.Property;
@@ -178,7 +179,7 @@ public class BuilderInterfaceCodeWriter extends AbstractBuilderCodeWriter {
         final StaticMethodCallBuilder createCall = aStaticMethodCall()
                 .withType(TypeBuilder.aType().withName(JAVASSIST_BUILDER_GENERATOR))
                 .withName("builderOf")
-                .withParameter(builderType.getTypeFQN() + ".class");
+                .withParameter(typeToClass(builderType));
 
         return aMethod()
                 .withAnnotation(createSuppressAnnotation("\"unchecked\""))
@@ -194,7 +195,21 @@ public class BuilderInterfaceCodeWriter extends AbstractBuilderCodeWriter {
         final StaticMethodCallBuilder createCall = aStaticMethodCall()
                 .withType(TypeBuilder.aType().withName(JAVASSIST_BUILDER_GENERATOR))
                 .withName("builderOf")
-                .withParameter(builderType.getTypeFQN() + ".class");
+                .withParameter(typeToClass(builderType));
+
+        ExpressionBuilder returnExpression = anExpression();
+
+        if (generatorProperties.isExtensible() && !typeParameters().isEmpty()) {
+            returnExpression.withTerm(aCast()
+                    .withType(builderType));
+        }
+
+        returnExpression
+                .withTerm(
+                        aMethodCall()
+                                .withObject(createCall)
+                                .withName("from")
+                                .withParameter("template"));
 
         return aMethod()
                 .withAnnotation(createSuppressAnnotation("\"unchecked\""))
@@ -207,14 +222,7 @@ public class BuilderInterfaceCodeWriter extends AbstractBuilderCodeWriter {
                         .withType(builtType)
                         .withName("template"))
                 .withStatement(aReturnStatement()
-                        .withExpression(anExpression()
-                                .withTerm(aCast()
-                                        .withType(builderType))
-                                .withTerm(
-                                        aMethodCall()
-                                                .withObject(createCall)
-                                                .withName("from")
-                                                .withParameter("template"))));
+                        .withExpression(returnExpression));
     }
 
     private AnnotationBuilder createSuppressAnnotation(String warning) {
@@ -319,4 +327,10 @@ public class BuilderInterfaceCodeWriter extends AbstractBuilderCodeWriter {
         return generatorProperties.getClassName() + "Type";
     }
 
+    private StaticVariableReaderBuilder typeToClass(TypeBuilder builderType) {
+        return aStaticVariable()
+                .withType(aType()
+                        .withName(builderType.getTypeFQN()))
+                .withName("class");
+    }
 }
